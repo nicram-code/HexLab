@@ -6,6 +6,9 @@
 
 </div>
 
+# THECODEX_REVERSESHELL
+
+Code taken from [0x18F/THECODEX_REVERSESHELL](https://github.com/0x18F/THECODEX_REVERSESHELL).
 ---
 
 ## 📚 Table of Contents
