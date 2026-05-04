@@ -28,9 +28,12 @@
 
 **HexLab** is an educational repository containing various security research materials, including:
 
-- **Backdoors** - Remote access tools and persistence mechanisms
-- **Exploits** - Code demonstrating vulnerability exploitation
-- **Web Attacks** - Web application security research materials
+- **Backdoors** - Understanding remote access and persistence mechanisms
+- **Exploits** - Vulnerability exploitation research and analysis
+- **Web Attacks** - Web application security research
+- **Tools** - Security research utilities and scanners
+- **RATS** - Security auditing tools and vulnerability scanners
+- **AI** - AI security research and jailbreak prompts
 
 ### 🎯 Purpose
 
@@ -44,11 +47,12 @@ This project is designed to help security enthusiasts, researchers, and students
 
 ### 🎓 Educational Focus
 
-Every piece of code in this repository is accompanied by:
+This repository focuses on:
 
-- Detailed explanations of how it works
-- Detection and prevention methods
-- Mitigation strategies
+- Detailed explanations of security concepts and techniques
+- Detection and prevention methods for each threat type
+- Mitigation strategies and defensive measures
+- Removal procedures for compromised systems
 - References to CVEs and security advisories
 
 ---
@@ -104,6 +108,42 @@ Web application security research including:
 
 **📖 [Learn more](web-attacks/README.md)**
 
+### 🛠️ Tools
+
+Security research utilities and scanners for:
+
+- Network analysis and monitoring
+- System analysis and forensics
+- Defensive security testing
+- Custom security utilities
+- Vulnerability assessment
+
+**📖 [Learn more](tools/README.md)**
+
+### 🔍 RATS
+
+Security auditing tools and vulnerability scanners for:
+
+- Static code analysis
+- Pattern-based vulnerability detection
+- Multi-language support
+- Custom rule engines
+- Security reporting
+
+**📖 [Learn more](rats/README.md)**
+
+### 🤖 AI
+
+AI security research including:
+
+- AI jailbreak prompts and techniques
+- LLM security research
+- Prompt injection analysis
+- AI model vulnerabilities
+- Defensive AI security measures
+
+**📖 [Learn more](Ai/README.md)**
+
 ---
 
 ## Getting Started
@@ -141,6 +181,9 @@ cat DISCLAIMER.md
 ls backdoors/
 ls exploits/
 ls web-attacks/
+ls tools/
+ls rats/
+ls Ai/
 ```
 
 ---

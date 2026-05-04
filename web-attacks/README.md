@@ -15,7 +15,7 @@
 - [Common Vulnerabilities](#common-vulnerabilities)
 - [Attack Techniques](#attack-techniques)
 - [Detection & Prevention](#detection--prevention)
-- [Educational Examples](#educational-examples)
+- [Removal & Recovery](#removal--recovery)
 - [Lab Setup](#lab-setup)
 - [Resources](#resources)
 
@@ -425,55 +425,138 @@ Set-Cookie: sessionid=xyz; HttpOnly; Secure; SameSite=Strict
 
 ---
 
-## Educational Examples
+## Removal & Recovery
 
-### Example 1: SQL Injection (Vulnerable PHP)
+### Incident Response for Web Attacks
 
-```php
-<?php
-// Vulnerable code
-$username = $_GET['username'];
-$query = "SELECT * FROM users WHERE username = '$username'";
-$result = mysqli_query($conn, $query);
+#### 1. Immediate Containment
 
-// Secure code
-$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-?>
+**Take Application Offline:**
+- Disable web server if attack is active
+- Put application in maintenance mode
+- Block access to vulnerable endpoints
+- Implement IP blocks if attack is from specific sources
+
+**Preserve Evidence:**
+- Capture web server logs
+- Save database state
+- Document attack vectors
+- Preserve attacker's session data
+
+#### 2. Vulnerability Assessment
+
+**Identify the Attack Type:**
+- Review access logs for suspicious patterns
+- Check for SQL injection attempts
+- Look for XSS payloads in requests
+- Monitor for authentication bypass attempts
+
+**Determine Impact:**
+- Check for data exfiltration
+- Verify database integrity
+- Review user account changes
+- Check for unauthorized file uploads
+
+#### 3. Database Recovery
+
+**SQL Injection Recovery:**
+```sql
+-- Check for data modification
+SELECT * FROM users WHERE created_at > 'attack_time';
+
+-- Restore from backup
+-- Use point-in-time recovery if available
+-- Verify data integrity
 ```
 
-### Example 2: XSS (Vulnerable JavaScript)
+**Verify Data Integrity:**
+- Check for unauthorized record changes
+- Review user account modifications
+- Verify sensitive data exposure
+- Audit admin account activities
 
-```javascript
-// Vulnerable
-function displayGreeting(name) {
-  document.getElementById('greeting').innerHTML = "Hello, " + name;
-}
+#### 4. Application Patching
 
-// Secure
-function displayGreeting(name) {
-  const element = document.getElementById('greeting');
-  element.textContent = "Hello, " + name;
-}
+**Apply Security Patches:**
+- Update web application framework
+- Apply security patches to dependencies
+- Review and fix vulnerable code
+- Test patches in staging environment
+
+**Code Review:**
+- Audit input validation
+- Review authentication logic
+- Check session management
+- Verify authorization controls
+
+#### 5. Credential Rotation
+
+**Change All Passwords:**
+- User account passwords
+- Admin credentials
+- Database passwords
+- API keys and tokens
+- Session secrets
+
+**Review Sessions:**
+- Invalidate all active sessions
+- Force password reset for all users
+- Review session management code
+- Implement secure session handling
+
+### Post-Incident Actions
+
+1. **Conduct Security Audit** - Full application security review
+2. **Implement WAF** - Web Application Firewall for protection
+3. **Enhance Logging** - Improve monitoring and alerting
+4. **Train Developers** - Secure coding practices
+5. **Document Incident** - Create incident report
+6. **Update Policies** - Implement lessons learned
+
+### Prevention Strategies
+
+#### Secure Coding Practices
+
+**Input Validation:**
+- Validate all user input on server-side
+- Use parameterized queries for database access
+- Implement output encoding
+- Use allow-lists instead of block-lists
+
+**Authentication & Authorization:**
+- Implement strong password policies
+- Use multi-factor authentication
+- Implement proper session management
+- Use role-based access control
+
+**Security Headers:**
+```http
+Content-Security-Policy: default-src 'self'
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
 ```
 
-### Example 3: CSRF (Vulnerable Form)
+#### Application Hardening
 
-```html
-<!-- Vulnerable -->
-<form action="/transfer" method="POST">
-  <input name="to" value="<%= to %>">
-  <input name="amount" value="<%= amount %>">
-</form>
+**Web Server Configuration:**
+- Disable unnecessary modules
+- Implement HTTPS everywhere
+- Use secure cipher suites
+- Disable directory listing
 
-<!-- Secure -->
-<form action="/transfer" method="POST">
-  <input type="hidden" name="csrf_token" value="<%= csrf_token %>">
-  <input name="to" value="<%= to %>">
-  <input name="amount" value="<%= amount %>">
-</form>
-```
+**Database Security:**
+- Use least privilege for database users
+- Encrypt sensitive data at rest
+- Implement database auditing
+- Regular database backups
+
+**Dependency Management:**
+- Keep dependencies updated
+- Use dependency scanning tools
+- Review security advisories
+- Remove unused dependencies
 
 ---
 

